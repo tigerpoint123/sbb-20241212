@@ -36,9 +36,8 @@ public class AnswerController {
             model.addAttribute("question", question);
             return "question_detail";
         }
-
-        answerService.create(question, answerForm.getContent(), siteUser);
-        return String.format("redirect:/question/detail/%s", id);
+        Answer answer = answerService.create(question, answerForm.getContent(), siteUser);
+        return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -60,17 +59,26 @@ public class AnswerController {
         if (!answer.getAuthor().getUsername().equals(principal.getName()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, " 수정 권한이 없습니다");
         this.answerService.modify(answer, answerForm.getContent());
-        return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+        return String.format("redirect:/question/detail/%s#answer_$s", answer.getQuestion().getId(), answer.getId());
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}")
     public String deleteAnswer(@PathVariable("id") Integer id, Principal principal) {
         Answer answer = answerService.getAnswer(id);
-        if(!answer.getAuthor().getUsername().equals(principal.getName()))
+        if (!answer.getAuthor().getUsername().equals(principal.getName()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
 
         this.answerService.deleteAnswer(answer);
         return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/vote/{id}")
+    public String answerVote(@PathVariable("id") Integer id, Principal principal) {
+        Answer answer = answerService.getAnswer(id);
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+        this.answerService.vote(answer, siteUser);
+        return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());
     }
 }

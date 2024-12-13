@@ -81,10 +81,19 @@ public class QuestionController {
     @PreAuthorize("isAuthenticated()")
     public String delete(@PathVariable("id") Integer id, Principal principal) {
         Question question = this.questionService.getQuestion(id);
-        if(!question.getAuthor().getUsername().equals(principal.getName()))
+        if (!question.getAuthor().getUsername().equals(principal.getName()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다");
 
         this.questionService.delete(question);
         return "redirect:/";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/vote/{id}")
+    public String vote(@PathVariable("id") Integer id, Principal principal) {
+        Question question = this.questionService.getQuestion(id);
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+        this.questionService.vote(question, siteUser);
+        return "redirect:/question/detail/" + id;
     }
 }
