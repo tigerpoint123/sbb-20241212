@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.sbb.question.Question;
+import org.example.sbb.user.SiteUser;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
@@ -22,9 +24,12 @@ public class Answer {
     @CreatedDate
     private LocalDateTime createDate;
 
-//    @LastModifiedDate
-//    private LocalDateTime modifyDate;
+    @LastModifiedDate
+    private LocalDateTime modifyDate;
 
     @ManyToOne
     private Question question; // 얘가 부모 (many)
+
+    @ManyToOne
+    private SiteUser author;
 }

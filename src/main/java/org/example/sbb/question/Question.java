@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.sbb.answer.Answer;
+import org.example.sbb.user.SiteUser;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,9 +28,12 @@ public class Question {
     @CreatedDate
     private LocalDateTime createDate;
 
-//    @LastModifiedDate
-//    private LocalDateTime modifyDate;
+    @LastModifiedDate
+    private LocalDateTime modifyDate;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
     private List<Answer> answerList;
+
+    @ManyToOne
+    private SiteUser author;
 }
