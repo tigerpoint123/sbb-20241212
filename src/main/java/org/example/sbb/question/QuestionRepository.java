@@ -13,6 +13,8 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
     Question findBySubject(String subject);
     Question findBySubjectAndContent(String subject, String content);
     List<Question> findBySubjectLike(String subject);
+
+    List<Question> findByAuthorId(int id);
     Page<Question> findAll(Pageable pageable);
     Page<Question> findAll(Specification<Question> specification, Pageable pageable);
 
@@ -29,4 +31,5 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
             + "   or a.content like %:kw% "
             + "   or u2.username like %:kw% ")
     Page<Question> findAllByKeyword(@Param("kw") String kw, Pageable pageable);
+//    List<Question> findbyUsername(String username);
 }

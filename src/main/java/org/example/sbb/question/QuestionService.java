@@ -4,7 +4,6 @@ import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.example.sbb.DataNotFoundException;
 import org.example.sbb.answer.Answer;
-import org.example.sbb.answer.AnswerRepository;
 import org.example.sbb.user.SiteUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,6 +37,11 @@ public class QuestionService {
         question.setAuthor(author);
         questionRepository.save(question);
     }
+
+//    public List<Question> findByQuestion(String username) {
+//        List<Question> question = questionRepository.findbyUsername(username);
+//        return question;
+//    }
 
     public Page<Question> getList(int page, String kw) {
         List<Sort.Order> sorts = new ArrayList<>();
@@ -85,5 +89,7 @@ public class QuestionService {
         };
     }
 
-    private final AnswerRepository answerRepository;
+    public List<Question> findByAuthorId(int id) {
+        return this.questionRepository.findByAuthorId(id);
+    }
 }

@@ -2,6 +2,10 @@ package org.example.sbb.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.sbb.answer.Answer;
+import org.example.sbb.answer.AnswerService;
+import org.example.sbb.question.Question;
+import org.example.sbb.question.QuestionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -13,12 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final QuestionService questionService;
+    private final AnswerService answerService;
 
     @GetMapping("/signup")
     public String signup(UserCreateForm userCreateForm) {
@@ -89,4 +96,16 @@ public class UserController {
         return "redirect:/";
     }
 
+    @GetMapping("/myInfo")
+    public String myInfo(Model model, Principal principal) {
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+        List<Question> question = this.questionService.findByAuthorId((int) siteUser.getId());
+        List<Answer> answers = this.answerService.findByAuthorId((int) siteUser.getId());
+        model.addAttribute("username", siteUser.getUsername());
+        model.addAttribute("email", siteUser.getEmail());
+        model.addAttribute("questionList", question);
+        model.addAttribute("answerList", answers);
+
+        return "myInfo";
+    }
 }

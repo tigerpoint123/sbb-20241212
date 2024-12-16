@@ -98,4 +98,5 @@ public class QuestionController {
         this.questionService.vote(question, siteUser);
         return "redirect:/question/detail/" + id;
     }
+
 }

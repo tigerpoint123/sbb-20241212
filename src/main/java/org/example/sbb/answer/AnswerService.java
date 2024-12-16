@@ -7,6 +7,7 @@ import org.example.sbb.user.SiteUser;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -43,5 +44,9 @@ public class AnswerService {
     public void vote(Answer answer, SiteUser siteUser) {
         answer.getVoter().add(siteUser);
         this.answerRepository.save(answer);
+    }
+
+    public List<Answer> findByAuthorId(int id) {
+        return this.answerRepository.findByAuthorId(id);
     }
 }

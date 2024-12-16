@@ -1,0 +1,66 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+    <div class="container mt-5">
+        <h2>개인정보 수정</h2>
+        <form>
+            <div class="mb-3">
+                <label for="username" class="form-label">사용자 이름</label>
+                <input type="text" class="form-control" id="username" th:value="${username}">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">이메일</label>
+                <input type="email" class="form-control" id="email" th:value="${email}">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">비밀번호</label>
+                <input type="password" class="form-control" id="password">
+            </div>
+            <div class="mb-3">
+                <h5><label for="password" class="form-label">작성한 질문</label></h5>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>작성일</th>
+                    </tr>
+                    </thead>
+                    <tbody th:each="question, stat : ${questionList}">
+                    <tr>
+                        <td th:text="${stat.index + 1}"></td>
+                        <td>
+                            <a th:href="@{|/question/detail/${question.id}|}" th:text="${question.subject}"></a>
+                        </td>
+                        <td th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mb-3">
+                <h5><label for="password" class="form-label">작성한 답변</label></h5>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>질문</th>
+                        <th>답변내용</th>
+                        <th>작성일</th>
+                    </tr>
+                    </thead>
+                    <tbody th:each="answer, stat : ${answerList}">
+                    <tr>
+                        <td>
+                            <a th:href="@{|/question/detail/${answer.getQuestion().getId()}|}" th:text="${answer.question.subject}"></a>
+                        </td>
+                        <td th:text="${answer.content}">
+                        </td>
+                        <td th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button type="submit" class="btn btn-primary">수정</button>
+        </form>
+    </div>
+
+</div>
+</html>
