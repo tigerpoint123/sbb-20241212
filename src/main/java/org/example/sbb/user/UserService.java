@@ -62,4 +62,11 @@ public class UserService {
         if(passwordEncoder.matches(inputPW, currentPW)) return true;
         else return false;
     }
+
+    public void modifyInfo(SiteUser siteUser, String name, String email, String password) {
+        siteUser.setUsername(name);
+        siteUser.setEmail(email);
+        siteUser.setPassword(passwordEncoder.encode(password));
+        this.userRepository.save(siteUser);
+    }
 }

@@ -96,6 +96,17 @@ public class UserController {
         return "redirect:/";
     }
 
+    @PostMapping("/modifyInfo")
+    public String modifyInfo(Principal principal,
+                             @RequestParam(value = "username") String username,
+                             @RequestParam(value = "email") String email,
+                             @RequestParam(value = "password") String password) {
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+        userService.modifyInfo(siteUser, username, email, password);
+
+        return "redirect:/";
+    }
+
     @GetMapping("/myInfo")
     public String myInfo(Model model, Principal principal) {
         SiteUser siteUser = this.userService.getUser(principal.getName());
