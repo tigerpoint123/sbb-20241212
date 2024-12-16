@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -47,5 +48,19 @@ public class UserController {
     @GetMapping("/login")
     public String login() {
         return "login_form";
+    }
+
+    @GetMapping("/findPassword")
+    public String findPassword() {
+        return "find_password";
+    }
+
+    @PostMapping("/resetPassword")
+    public String resetPassword(@RequestParam(value = "email") String email) {
+        String newPassword = this.userService.sendTempPasswordEmail(email);
+        SiteUser siteUser = this.userService.getUserFromEmail(email);
+
+        this.userService.modifyPassword(siteUser, siteUser.getUsername(), siteUser.getEmail(), newPassword);
+        return "redirect:/user/login";
     }
 }
