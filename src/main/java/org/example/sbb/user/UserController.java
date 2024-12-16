@@ -3,12 +3,16 @@ package org.example.sbb.user;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
@@ -63,4 +67,26 @@ public class UserController {
         this.userService.modifyPassword(siteUser, siteUser.getUsername(), siteUser.getEmail(), newPassword);
         return "redirect:/user/login";
     }
+
+    @GetMapping("/modifyPassword")
+    public String modifyPassword() {
+        return "modify_password";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/modifyPassword")
+    public String modifyPassword(Principal principal,
+                                 @RequestParam(value = "currentPassword") String currentPassword,
+                                 @RequestParam(value = "newPassword") String newPassword, Model model) {
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+
+        //비밀번호 검증
+        if (!userService.checkPassword(siteUser.getPassword(), currentPassword)) {
+            model.addAttribute("error", "비밀번호가 일치하지 않습니다.");
+            return "modify_password";
+        }
+        userService.modifyPassword(siteUser, principal.getName(), siteUser.getEmail(), newPassword);
+        return "redirect:/";
+    }
+
 }

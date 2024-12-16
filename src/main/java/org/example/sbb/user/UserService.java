@@ -57,4 +57,9 @@ public class UserService {
         siteUser.setPassword(passwordEncoder.encode(password));
         this.userRepository.save(siteUser);
     }
+
+    public boolean checkPassword(String currentPW, String inputPW) {
+        if(passwordEncoder.matches(inputPW, currentPW)) return true;
+        else return false;
+    }
 }
