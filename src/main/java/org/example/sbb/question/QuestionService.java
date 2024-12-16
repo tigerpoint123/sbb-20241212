@@ -4,6 +4,7 @@ import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.example.sbb.DataNotFoundException;
 import org.example.sbb.answer.Answer;
+import org.example.sbb.answer.AnswerRepository;
 import org.example.sbb.user.SiteUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -84,4 +85,5 @@ public class QuestionService {
         };
     }
 
+    private final AnswerRepository answerRepository;
 }
