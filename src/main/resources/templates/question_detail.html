@@ -30,15 +30,18 @@
                    th:text="삭제"></a>
                 <a href="#" class="btn btn-sm btn-outline-secondary" id="showInput"
                    th:text="댓글"></a>
-                <form th:action="@{|/comment/questionCreate/${question.id}|}" th:object="${commentForm}" method="post"
-                      class="my-3" style="display: none" id="commentFormQuestion">
-                    <div th:replace="~{form_errors :: formErrorsFragment}"></div>
-                    <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control"
-                              rows="10"></textarea>
-                    <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control"
-                              rows="10"></textarea>
-                    <input type="submit" value="댓글등록" class="btn btn-primary my-2">
-                </form>
+                <div th:each="comment : ${comments}">
+                    <form th:action="@{|/comment/questionCreate/${question.id}|}" th:object="${commentForm}" method="post"
+                          class="my-3" style="display: none" id="commentFormQuestion">
+                        <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+                        <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control"
+                                  rows="10"></textarea>
+                        <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control"
+                                  rows="10"></textarea>
+                        <input type="submit" value="댓글등록" class="btn btn-primary my-2">
+                    </form>
+                    <p th:text="${comment.content}"></p>
+                </div>
             </div>
         </div>
     </div>

@@ -8,6 +8,7 @@ import org.example.sbb.user.SiteUser;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +35,9 @@ public class CommentService {
 
         this.commentRepository.save(comment);
         return comment;
+    }
+
+    public List<Comment> findCommentsById(Integer id) {
+        return this.commentRepository.findAllByQuestionId(id);
     }
 }

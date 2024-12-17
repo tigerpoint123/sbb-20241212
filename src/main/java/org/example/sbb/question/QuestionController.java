@@ -3,7 +3,9 @@ package org.example.sbb.question;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.sbb.answer.AnswerForm;
+import org.example.sbb.comment.Comment;
 import org.example.sbb.comment.CommentForm;
+import org.example.sbb.comment.CommentService;
 import org.example.sbb.user.SiteUser;
 import org.example.sbb.user.UserService;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ import java.security.Principal;
 public class QuestionController {
     private final QuestionService questionService;
     private final UserService userService;
+    private final CommentService commentService;
 
     @GetMapping("/list")
     public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
@@ -37,7 +41,10 @@ public class QuestionController {
     @GetMapping(value = "/detail/{id}")
     public String detail(Model model, @PathVariable Integer id, AnswerForm answerForm, CommentForm commentForm) {
         Question question = this.questionService.getQuestion(id);
+        List<Comment> comments = commentService.findCommentsById(id);
+
         model.addAttribute("question", question);
+        model.addAttribute("comments", comments);
         return "question_detail";
     }
 
