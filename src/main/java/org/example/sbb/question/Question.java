@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.sbb.answer.Answer;
+import org.example.sbb.category.Category;
 import org.example.sbb.user.SiteUser;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -40,4 +41,7 @@ public class Question {
 
     @ManyToMany
     Set<SiteUser> voter;
+
+    @ManyToOne
+    private Category category;
 }

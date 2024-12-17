@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.sbb.DataNotFoundException;
 import org.example.sbb.question.Question;
 import org.example.sbb.user.SiteUser;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -48,5 +49,12 @@ public class AnswerService {
 
     public List<Answer> findByAuthorId(int id) {
         return this.answerRepository.findByAuthorId(id);
+    }
+
+    public List<Answer> findAll() {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
+//        List<Answer> answers = this.answerRepository.findAllWithAuthor();
+        List<Answer> answers = this.answerRepository.findAll(sort);
+        return answers;
     }
 }

@@ -8,11 +8,14 @@ import org.example.sbb.question.QuestionService;
 import org.example.sbb.user.SiteUser;
 import org.example.sbb.user.UserService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/comment")
@@ -41,4 +44,11 @@ public class CommentController {
         return "redirect:/question/detail/"+id;
     }
 
+    @GetMapping("/recent")
+    public String recent(Model model) {
+        List<Comment> list = this.commentService.findAll();
+        model.addAttribute("recentList", list);
+
+        return "recent_comment";
+    }
 }

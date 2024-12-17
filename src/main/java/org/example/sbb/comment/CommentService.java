@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.sbb.answer.Answer;
 import org.example.sbb.question.Question;
 import org.example.sbb.user.SiteUser;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -39,5 +40,11 @@ public class CommentService {
 
     public List<Comment> findCommentsById(Integer id) {
         return this.commentRepository.findAllByQuestionId(id);
+    }
+
+    public List<Comment> findAll() {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
+        List<Comment> comments = this.commentRepository.findAll(sort);
+        return comments;
     }
 }

@@ -81,7 +81,7 @@
                    th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                    th:text="삭제"></a>
 
-                <a href="#" class="btn btn-sm btn-outline-secondary" id="showInputOnAnswer"
+                <a href="#" class="btn btn-sm btn-outline-secondary" id="showInputOnAnswer  "
                    th:text="댓글"></a>
                 <form th:action="@{|/comment/answerCreate/${answer.id}|}" th:object="${commentForm}" method="post"
                       class="my-3" style="display: none" id="commentFormAnswer">

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.sbb.question.Question;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -13,8 +15,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
-    private Question question;
+    @Column(nullable = false, name = "categoryName")
+    private String name;
 
+    @OneToMany
+    private List<Question> question;
 
 }
