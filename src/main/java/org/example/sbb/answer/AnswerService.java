@@ -53,7 +53,6 @@ public class AnswerService {
 
     public List<Answer> findAll() {
         Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
-//        List<Answer> answers = this.answerRepository.findAllWithAuthor();
         List<Answer> answers = this.answerRepository.findAll(sort);
         return answers;
     }
