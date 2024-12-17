@@ -28,6 +28,17 @@
                    class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
                    th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
                    th:text="삭제"></a>
+                <a href="#" class="btn btn-sm btn-outline-secondary" id="showInput"
+                   th:text="댓글"></a>
+                <form th:action="@{|/comment/questionCreate/${question.id}|}" th:object="${commentForm}" method="post"
+                      class="my-3" style="display: none" id="commentFormQuestion">
+                    <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+                    <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control"
+                              rows="10"></textarea>
+                    <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control"
+                              rows="10"></textarea>
+                    <input type="submit" value="댓글등록" class="btn btn-primary my-2">
+                </form>
             </div>
         </div>
     </div>
@@ -51,7 +62,7 @@
                     <div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
                 </div>
             </div>
-<!--            추천 수정 삭제-->
+            <!--            추천 수정 삭제-->
             <div class="my-3">
                 <a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
                    th:data-uri="@{|/answer/vote/${answer.id}|}">
@@ -66,6 +77,18 @@
                    class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
                    th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                    th:text="삭제"></a>
+
+                <a href="#" class="btn btn-sm btn-outline-secondary" id="showInputOnAnswer"
+                   th:text="댓글"></a>
+                <form th:action="@{|/comment/answerCreate/${answer.id}|}" th:object="${commentForm}" method="post"
+                      class="my-3" style="display: none" id="commentFormAnswer">
+                    <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+                    <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control"
+                              rows="10"></textarea>
+                    <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control"
+                              rows="10"></textarea>
+                    <input type="submit" value="댓글등록" class="btn btn-primary my-2">
+                </form>
             </div>
         </div>
     </div>
@@ -90,12 +113,25 @@
         });
     });
     const recommend_elements = document.getElementsByClassName("recommend");
-    Array.from(recommend_elements).forEach(function(element) {
-        element.addEventListener('click', function() {
-            if(confirm("정말로 추천하시겠습니까?")) {
+    Array.from(recommend_elements).forEach(function (element) {
+        element.addEventListener('click', function () {
+            if (confirm("정말로 추천하시겠습니까?")) {
                 location.href = this.dataset.uri;
-            };
+            }
+            ;
         });
+    });
+
+    const showInputBtn = document.getElementById('showInput');
+    const showInputOnAnswer = document.getElementById('showInputOnAnswer');
+    const questionCommentForm = document.getElementById('commentFormQuestion');
+    const answerCommentForm = document.getElementById('commentFormAnswer');
+
+    showInputBtn.addEventListener('click', () => {
+        questionCommentForm.style.display = questionCommentForm.style.display === 'none' ? 'block' : 'none';
+    });
+    showInputOnAnswer.addEventListener('click', () => {
+        answerCommentForm.style.display = answerCommentForm.style.display === 'none' ? 'block' : 'none';
     });
 </script>
 </html>

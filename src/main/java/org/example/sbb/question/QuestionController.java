@@ -3,6 +3,7 @@ package org.example.sbb.question;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.sbb.answer.AnswerForm;
+import org.example.sbb.comment.CommentForm;
 import org.example.sbb.user.SiteUser;
 import org.example.sbb.user.UserService;
 import org.springframework.data.domain.Page;
@@ -34,7 +35,7 @@ public class QuestionController {
     }
 
     @GetMapping(value = "/detail/{id}")
-    public String detail(Model model, @PathVariable Integer id, AnswerForm answerForm) {
+    public String detail(Model model, @PathVariable Integer id, AnswerForm answerForm, CommentForm commentForm) {
         Question question = this.questionService.getQuestion(id);
         model.addAttribute("question", question);
         return "question_detail";
