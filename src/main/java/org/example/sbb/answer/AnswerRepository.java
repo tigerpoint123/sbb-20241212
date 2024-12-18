@@ -10,4 +10,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Integer> {
     List<Answer> findByAuthorId(int id);
 
     Page<Answer> findAllByQuestion_Id(Integer questionId, Pageable pageable);
+
+    Page<Answer> findByQuestionIdOrderByVoterDesc(int questionId, Pageable pageable);
 }

@@ -32,7 +32,7 @@ public class AnswerService {
 
     public Answer getAnswer(Integer id) {
         Optional<Answer> answer = this.answerRepository.findById(id);
-        if(answer.isPresent()) return answer.get();
+        if (answer.isPresent()) return answer.get();
         else throw new DataNotFoundException("Answer not found");
     }
 
@@ -61,12 +61,16 @@ public class AnswerService {
         return this.answerRepository.findAll();
     }
 
-    public Page<Answer> findAnswerPaging(int id, int page , Pageable pageable) {
+    public Page<Answer> findAnswerPaging(int id, int page, Pageable pageable, String sort) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         pageable = PageRequest.of(page, 3, Sort.by(sorts));
-        return this.answerRepository.findAllByQuestion_Id(id, pageable);
-
+        switch (sort) {
+            case "vote":
+                return this.answerRepository.findByQuestionIdOrderByVoterDesc(id, pageable);
+            default:
+                return this.answerRepository.findAllByQuestion_Id(id, pageable);
+        }
     }
 
 }

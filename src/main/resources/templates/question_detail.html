@@ -63,6 +63,15 @@
     <!-- 답변의 갯수 표시 -->
     <h5 class="border-bottom my-3 py-2"
         th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            정렬 조건
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li><a class="dropdown-item" th:href="@{|/question/detail/${question.id}/createDate|}">최신순</a></li>
+            <li><a class="dropdown-item" th:href="@{|/question/detail/${question.id}/vote|}">추천순</a></li>
+        </ul>
+    </div>
     <!-- 답변 반복 시작 -->
     <div class="card my-3" th:each="answer, loop : ${paging}">
         <a th:id="|answer_${answer.id}|"></a>
@@ -188,5 +197,6 @@
         document.getElementById('page').value = 0;  // 검색버튼을 클릭할 경우 0페이지부터 조회한다.
         document.getElementById('searchForm').submit();
     });
+
 </script>
 </html>

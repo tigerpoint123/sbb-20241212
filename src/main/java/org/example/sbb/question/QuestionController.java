@@ -42,13 +42,15 @@ public class QuestionController {
         return "question_list";
     }
 
-    @GetMapping(value = "/detail/{id}")
-    public String detail(Model model, @PathVariable Integer id, @RequestParam(value = "page", defaultValue = "0") int page,
-                         AnswerForm answerForm, CommentForm commentForm, Pageable pageable) {
+    @GetMapping(value = "/detail/{id}/{sort}")
+    public String detail(Model model, @PathVariable(value = "id") Integer id, @RequestParam(value = "page", defaultValue = "0") int page,
+                         AnswerForm answerForm, CommentForm commentForm, Pageable pageable,
+                         @PathVariable(value = "sort") String sort) {
         Question question = this.questionService.getQuestion(id);
         List<Comment> comments = commentService.findCommentsById(id);
-        Page<Answer> answerPage = this.answerService.findAnswerPaging(id, page, pageable);
+        Page<Answer> answerPage = this.answerService.findAnswerPaging(id, page, pageable, sort);
 
+        System.out.println(sort);
         model.addAttribute("question", question);
         model.addAttribute("comments", comments);
         model.addAttribute("paging", answerPage);
