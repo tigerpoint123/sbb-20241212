@@ -2,13 +2,16 @@ package org.example.sbb.question;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.sbb.answer.Answer;
 import org.example.sbb.answer.AnswerForm;
+import org.example.sbb.answer.AnswerService;
 import org.example.sbb.comment.Comment;
 import org.example.sbb.comment.CommentForm;
 import org.example.sbb.comment.CommentService;
 import org.example.sbb.user.SiteUser;
 import org.example.sbb.user.UserService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -27,6 +30,7 @@ public class QuestionController {
     private final QuestionService questionService;
     private final UserService userService;
     private final CommentService commentService;
+    private final AnswerService answerService;
 
     @GetMapping("/list")
     public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
@@ -39,12 +43,15 @@ public class QuestionController {
     }
 
     @GetMapping(value = "/detail/{id}")
-    public String detail(Model model, @PathVariable Integer id, AnswerForm answerForm, CommentForm commentForm) {
+    public String detail(Model model, @PathVariable Integer id, @RequestParam(value = "page", defaultValue = "0") int page,
+                         AnswerForm answerForm, CommentForm commentForm, Pageable pageable) {
         Question question = this.questionService.getQuestion(id);
         List<Comment> comments = commentService.findCommentsById(id);
+        Page<Answer> answerPage = this.answerService.findAnswerPaging(id, page, pageable);
 
         model.addAttribute("question", question);
         model.addAttribute("comments", comments);
+        model.addAttribute("paging", answerPage);
         return "question_detail";
     }
 

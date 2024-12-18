@@ -64,7 +64,7 @@
     <h5 class="border-bottom my-3 py-2"
         th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
     <!-- 답변 반복 시작 -->
-    <div class="card my-3" th:each="answer : ${question.answerList}">
+    <div class="card my-3" th:each="answer, loop : ${paging}">
         <a th:id="|answer_${answer.id}|"></a>
         <div class="card-body">
             <div class="card-text" th:utext="${@commonUtil.markdown(answer.content)}"></div>
@@ -96,11 +96,6 @@
                    th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                    th:text="삭제"></a>
 
-<!--                <a th:href="@{|/comment/answerCreate/${answer.id}|}" class="btn btn-sm btn-outline-secondary"-->
-<!--                   th:object="${commentForm}"-->
-<!--                   sec:authorize="isAuthenticated()"-->
-<!--                   th:text="댓글달기"></a>-->
-
                 <a th:href="@{|/comment/answerComment/${answer.id}|}" class="btn btn-sm btn-outline-secondary" th:id="${'showCommentBtnOnAnswer_'+answer.id}"
                    th:text="댓글"></a>
                 <form th:action="@{|/comment/answerComment/${answer.id}|}" th:object="${commentForm}" method="post"
@@ -116,6 +111,29 @@
         </div>
     </div>
     <!-- 답변 반복 끝  -->
+    <!-- 페이징처리 시작 -->
+    <div th:if="${!paging.isEmpty()}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|?page=${paging.number-1}|}">
+                    <span>이전</span>
+                </a>
+            </li>
+            <li th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
+                th:if="${page >= paging.number-3 and page <= paging.number+3}"
+                th:classappend="${page == paging.number} ? 'active'"
+                class="page-item">
+                <a th:text="${page}" class="page-link" th:href="@{|?page=${page}|}"></a>
+            </li>
+            <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${paging.number+1}|}">
+                    <span>다음</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- 페이징처리 끝 -->
 </div>
 <script layout:fragment="script" type='text/javascript'>
     const delete_elements = document.getElementsByClassName("delete");
@@ -157,6 +175,18 @@
         });
     })
 
-
+    const page_elements = document.getElementsByClassName("page-link");
+    Array.from(page_elements).forEach(function(element) {
+        element.addEventListener('click', function() {
+            document.getElementById('page').value = this.dataset.page;
+            document.getElementById('searchForm').submit();
+        });
+    });
+    const btn_search = document.getElementById("btn_search");
+    btn_search.addEventListener('click', function() {
+        document.getElementById('kw').value = document.getElementById('search_kw').value;
+        document.getElementById('page').value = 0;  // 검색버튼을 클릭할 경우 0페이지부터 조회한다.
+        document.getElementById('searchForm').submit();
+    });
 </script>
 </html>

@@ -4,10 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.example.sbb.DataNotFoundException;
 import org.example.sbb.question.Question;
 import org.example.sbb.user.SiteUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,8 +56,17 @@ public class AnswerService {
     }
 
     public List<Answer> findAll() {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
-        List<Answer> answers = this.answerRepository.findAll(sort);
-        return answers;
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        return this.answerRepository.findAll();
     }
+
+    public Page<Answer> findAnswerPaging(int id, int page , Pageable pageable) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        pageable = PageRequest.of(page, 3, Sort.by(sorts));
+        return this.answerRepository.findAllByQuestion_Id(id, pageable);
+
+    }
+
 }

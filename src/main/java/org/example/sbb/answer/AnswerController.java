@@ -89,6 +89,4 @@ public class AnswerController {
         model.addAttribute("recentList", recentList);
         return "recent_answer";
     }
-
-
 }

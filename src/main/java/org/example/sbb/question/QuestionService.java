@@ -38,16 +38,10 @@ public class QuestionService {
         questionRepository.save(question);
     }
 
-//    public List<Question> findByQuestion(String username) {
-//        List<Question> question = questionRepository.findbyUsername(username);
-//        return question;
-//    }
-
     public Page<Question> getList(int page, String kw) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-//        Specification<Question> spec = search(kw);
         return questionRepository.findAllByKeyword(kw, pageable);
     }
 
@@ -67,7 +61,6 @@ public class QuestionService {
         questionRepository.save(question);
     }
 
-    // 3-13 JPA의 Specification 인터페이스 사용하기
     private Specification<Question> search(String kw) {
         return new Specification<>() {
             private static final long serialVersionUID = 1L;
