@@ -33,6 +33,7 @@ public class CommentService {
         comment.setAuthor(siteUser.getUsername());
         comment.setContent(content);
         comment.setAnswer(answer);
+        comment.setQuestion(answer.getQuestion());
 
         this.commentRepository.save(comment);
         return comment;

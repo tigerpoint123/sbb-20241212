@@ -35,14 +35,14 @@ public class CommentController {
         return "redirect:/question/detail/"+id;
     }
 
-    @PostMapping("/answerCreate/{id}")
-    public String createAnswer(@PathVariable int id, CommentForm commentForm, Principal principal) {
-        SiteUser siteUser = this.userService.getUser(principal.getName());
-        Answer answer = this.answerService.getAnswer(id);
-
-        Comment comment = this.commentService.createA(siteUser, commentForm.getContent(), answer);
-        return "redirect:/question/detail/"+id;
-    }
+//    @PostMapping("/answerCreate/{id}")
+//    public String createAnswer(@PathVariable int id, CommentForm commentForm, Principal principal) {
+//        SiteUser siteUser = this.userService.getUser(principal.getName());
+//        Answer answer = this.answerService.getAnswer(id);
+//
+//        Comment comment = this.commentService.createA(siteUser, commentForm.getContent(), answer);
+//        return "redirect:/question/detail/"+id;
+//    }
 
     @GetMapping("/recent")
     public String recent(Model model) {
@@ -51,4 +51,20 @@ public class CommentController {
 
         return "recent_comment";
     }
+
+    @GetMapping("/answerComment/{id}")
+    public String answerCreate(@PathVariable int id, Model model, CommentForm commentForm, Principal principal) {
+        model.addAttribute("answerId", id);
+        return "comment_form";
+    }
+
+    @PostMapping("/answerComment/{id}")
+    public String answerComment(@PathVariable(value = "id") int id, CommentForm commentForm, Principal principal) {
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+        Answer answer = this.answerService.getAnswer(id);
+
+        Comment comment = this.commentService.createA(siteUser, commentForm.getContent(), answer);
+        return "redirect:/question/detail/"+answer.getQuestion().getId();
+    }
+
 }

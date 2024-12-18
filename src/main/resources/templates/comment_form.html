@@ -1,0 +1,9 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+    <h5 class="my-3 border-bottom pb-2">댓글 입력</h5>
+    <form method="post" th:action="@{|/comment/answerComment/${answerId}|}" th:object="${commentForm}" class="my-3">
+        <textarea th:field="*{content}" class="form-control" rows="10"></textarea>
+        <input type="submit" value="댓글등록" class="btn btn-primary my-2">
+    </form>
+</div>
+</html>

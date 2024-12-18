@@ -96,10 +96,15 @@
                    th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                    th:text="삭제"></a>
 
-                <a href="#" class="btn btn-sm btn-outline-secondary" id="showInputOnAnswer  "
+<!--                <a th:href="@{|/comment/answerCreate/${answer.id}|}" class="btn btn-sm btn-outline-secondary"-->
+<!--                   th:object="${commentForm}"-->
+<!--                   sec:authorize="isAuthenticated()"-->
+<!--                   th:text="댓글달기"></a>-->
+
+                <a th:href="@{|/comment/answerComment/${answer.id}|}" class="btn btn-sm btn-outline-secondary" th:id="${'showCommentBtnOnAnswer_'+answer.id}"
                    th:text="댓글"></a>
-                <form th:action="@{|/comment/answerCreate/${answer.id}|}" th:object="${commentForm}" method="post"
-                      class="my-3" style="display: none" id="commentFormAnswer">
+                <form th:action="@{|/comment/answerComment/${answer.id}|}" th:object="${commentForm}" method="post"
+                      class="my-3" style="display: none" th:id="${'commentFormAnswer_'+answer.id}">
                     <div th:replace="~{form_errors :: formErrorsFragment}"></div>
                     <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control"
                               rows="10"></textarea>
@@ -133,19 +138,25 @@
     });
 
     const showInputBtn = document.getElementById('showInput');
-    const showInputOnAnswer = document.getElementById('showInputOnAnswer');
+    const showCommentBtnOnAnswer = document.querySelectorAll('.showCommentBtnOnAnswer');
     const questionCommentForm = document.getElementById('commentFormQuestion');
-    const answerCommentForm = document.getElementById('commentFormAnswer');
+    // const answerCommentForm = document.querySelectorAll('.commentFormAnswer');
     const comments = document.getElementById('comments');
 
     showInputBtn.addEventListener('click', () => {
         questionCommentForm.style.display = questionCommentForm.style.display === 'none' ? 'block' : 'none';
         comments.style.display = comments.style.display === 'none' ? 'block' : 'none';
     });
-    showInputOnAnswer.addEventListener('click', () => {
-        answerCommentForm.style.display = answerCommentForm.style.display === 'none' ? 'block' : 'none';
-        comments.style.display = comments.style.display === 'none' ? 'block' : 'none';
-    });
+    showCommentBtnOnAnswer.forEach((answer) => {
+        answer.addEventListener('click', () => {
+            const buttonId = answer.id;
+            console.log(buttonId);
+            const answerCommentForm = document.getElementById('commentFormAnswer_'+buttonId);
+
+            answerCommentForm.style.display = answerCommentForm.style.display === 'none' ? 'block' : 'none';
+        });
+    })
+
 
 </script>
 </html>
