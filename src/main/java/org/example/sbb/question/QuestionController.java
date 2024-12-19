@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.sbb.answer.Answer;
 import org.example.sbb.answer.AnswerForm;
 import org.example.sbb.answer.AnswerService;
+import org.example.sbb.category.Category;
+import org.example.sbb.category.CategoryForm;
+import org.example.sbb.category.CategoryService;
 import org.example.sbb.comment.Comment;
 import org.example.sbb.comment.CommentForm;
 import org.example.sbb.comment.CommentService;
@@ -31,6 +34,7 @@ public class QuestionController {
     private final UserService userService;
     private final CommentService commentService;
     private final AnswerService answerService;
+    private final CategoryService categoryService;
 
     @GetMapping("/list")
     public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
@@ -50,7 +54,20 @@ public class QuestionController {
         List<Comment> comments = commentService.findCommentsById(id);
         Page<Answer> answerPage = this.answerService.findAnswerPaging(id, page, pageable, sort);
 
-        System.out.println(sort);
+        model.addAttribute("question", question);
+        model.addAttribute("comments", comments);
+        model.addAttribute("paging", answerPage);
+        return "question_detail";
+    }
+
+    @GetMapping(value = "/detail/{id}")
+    public String detail(Model model, @PathVariable(value = "id") Integer id, @RequestParam(value = "page", defaultValue = "0") int page,
+                         AnswerForm answerForm, CommentForm commentForm, Pageable pageable) {
+        Question question = this.questionService.getQuestion(id);
+        List<Comment> comments = commentService.findCommentsById(id);
+        String sort = "createDate";
+        Page<Answer> answerPage = this.answerService.findAnswerPaging(id, page, pageable, sort);
+
         model.addAttribute("question", question);
         model.addAttribute("comments", comments);
         model.addAttribute("paging", answerPage);
@@ -59,7 +76,10 @@ public class QuestionController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/create")
-    public String questionCreate(QuestionForm questionForm) {
+    public String questionCreate(QuestionForm questionForm, Model model, CategoryForm categoryForm) {
+        List<Category> category = categoryService.findName();
+        model.addAttribute("questionForm", questionForm);
+        model.addAttribute("categories", category);
         return "question_form";
     }
 
@@ -67,9 +87,10 @@ public class QuestionController {
     @PostMapping("/create")
     public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal) {
         if (bindingResult.hasErrors()) return "question_form";
-        SiteUser siteUser = this.userService.getUser(principal.getName());
 
-        questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser);
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+        Category category = categoryService.findCategory(Long.valueOf(questionForm.getCategory().getId()));
+        questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser, category);
         return "redirect:/question/list";
     }
 

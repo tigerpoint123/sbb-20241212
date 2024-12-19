@@ -4,6 +4,7 @@ import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.example.sbb.DataNotFoundException;
 import org.example.sbb.answer.Answer;
+import org.example.sbb.category.Category;
 import org.example.sbb.user.SiteUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +21,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
-
     private final QuestionRepository questionRepository;
 
     public Question getQuestion(Integer id) {
@@ -29,12 +29,13 @@ public class QuestionService {
         else throw new DataNotFoundException("Question not found");
     }
 
-    public void create(String subject, String content, SiteUser author) {
+    public void create(String subject, String content, SiteUser author, Category category) {
         Question question = new Question();
         question.setSubject(subject);
         question.setContent(content);
         question.setCreateDate(LocalDateTime.now());
         question.setAuthor(author);
+        question.setCategory(category);
         questionRepository.save(question);
     }
 
