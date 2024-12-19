@@ -1,5 +1,9 @@
 package org.example.sbb.question;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.sbb.answer.Answer;
@@ -62,8 +66,29 @@ public class QuestionController {
 
     @GetMapping(value = "/detail/{id}")
     public String detail(Model model, @PathVariable(value = "id") Integer id, @RequestParam(value = "page", defaultValue = "0") int page,
-                         AnswerForm answerForm, CommentForm commentForm, Pageable pageable) {
+                         AnswerForm answerForm, CommentForm commentForm, Pageable pageable, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Question question = this.questionService.getQuestion(id);
+
+        // 조회수 용 쿠키 코드
+        String sessionId = session.getId();
+        Cookie cookie = new Cookie("question_" + id + "_" + sessionId, "");
+        cookie.setMaxAge(60 * 60 * 2); // 24시간 유효
+        Cookie[] cookies = request.getCookies();
+        boolean isExist = false;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if (c.getName().equals(cookie.getName())) {
+                    isExist = true;
+                    break;
+                }
+            }
+        }
+        if (!isExist) {
+            this.questionService.countView(question.getViews(), question);
+            response.addCookie(cookie);
+        }
+        // 쿠키 코드 끝
+
         List<Comment> comments = commentService.findCommentsById(id);
         String sort = "createDate";
         Page<Answer> answerPage = this.answerService.findAnswerPaging(id, page, pageable, sort);

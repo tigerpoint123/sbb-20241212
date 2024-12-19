@@ -61,6 +61,10 @@ public class QuestionService {
         question.getVoter().add(siteUser);
         questionRepository.save(question);
     }
+    public void countView(int views, Question question) {
+        question.setViews(views+1);
+        questionRepository.save(question);
+    }
 
     private Specification<Question> search(String kw) {
         return new Specification<>() {
@@ -86,4 +90,6 @@ public class QuestionService {
     public List<Question> findByAuthorId(int id) {
         return this.questionRepository.findByAuthorId(id);
     }
+
+
 }

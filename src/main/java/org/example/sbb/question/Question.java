@@ -44,4 +44,7 @@ public class Question {
 
     @ManyToOne
     private Category category;
+
+    @Column(nullable = false)
+    private int views=0;
 }
