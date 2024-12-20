@@ -1,5 +1,6 @@
 package org.example.sbb;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,7 +17,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true) // @PreAuthorize 사용을 위해 필수
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
