@@ -8,6 +8,7 @@ import org.example.sbb.question.Question;
 import org.example.sbb.question.QuestionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class UserController {
     private final AnswerService answerService;
 
     @GetMapping("/signup")
-    public String signup(UserCreateForm userCreateForm) {
+    public String signup( UserCreateForm userCreateForm) {
         return "signup_form";
     }
 
@@ -42,7 +44,7 @@ public class UserController {
         }
 
         try {
-            userService.create(userCreateForm.getUsername(), userCreateForm.getEmail(), userCreateForm.getPassword1());
+            userService.create(userCreateForm.getUsername(), userCreateForm.getEmail(), userCreateForm.getPassword1(), userCreateForm.getNickname());
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
             bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
@@ -109,10 +111,26 @@ public class UserController {
 
     @GetMapping("/myInfo")
     public String myInfo(Model model, Principal principal) {
-        SiteUser siteUser = this.userService.getUser(principal.getName());
+        SiteUser siteUser;
+
+        if (principal instanceof OAuth2AuthenticationToken) {
+            // OAuth2 (카카오 로그인) 사용자의 경우
+            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
+            Map<String, Object> attributes = authToken.getPrincipal().getAttributes();
+            String kakaoId = attributes.get("id").toString();
+            siteUser = this.userService.getUserByKakaoId(kakaoId);
+        } else {
+            // 일반 로그인 사용자의 경우
+            siteUser = this.userService.getUser(principal.getName());
+        }
+
+        if (siteUser == null) {
+            throw new RuntimeException("사용자 정보를 찾을 수 없습니다.");
+        }
+
         List<Question> question = this.questionService.findByAuthorId((int) siteUser.getId());
         List<Answer> answers = this.answerService.findByAuthorId((int) siteUser.getId());
-        model.addAttribute("username", siteUser.getUsername());
+        model.addAttribute("nickname", siteUser.getNickname());
         model.addAttribute("email", siteUser.getEmail());
         model.addAttribute("questionList", question);
         model.addAttribute("answerList", answers);

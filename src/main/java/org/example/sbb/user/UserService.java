@@ -5,6 +5,7 @@ import org.example.sbb.DataNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,19 +19,20 @@ public class UserService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public SiteUser create(String username, String email, String password) {
+    public SiteUser create(String username, String email, String password, String nickname) {
         SiteUser siteUser = new SiteUser();
         siteUser.setUsername(username);
         siteUser.setEmail(email);
         siteUser.setPassword(passwordEncoder.encode(password));
+        siteUser.setNickname(nickname);
+        siteUser.setRole(Role.USER);
         this.userRepository.save(siteUser);
         return siteUser;
     }
 
     public SiteUser getUser(String username) {
-        Optional<SiteUser> siteUser = this.userRepository.findByUsername(username);
-        if (siteUser.isPresent()) return siteUser.get();
-        else throw new DataNotFoundException("site user not found");
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
     public SiteUser getUserFromEmail(String email) {
@@ -68,5 +70,10 @@ public class UserService {
         siteUser.setEmail(email);
         siteUser.setPassword(passwordEncoder.encode(password));
         this.userRepository.save(siteUser);
+    }
+
+    public SiteUser getUserByKakaoId(String kakaoId) {
+        return userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with kakaoId: " + kakaoId));
     }
 }

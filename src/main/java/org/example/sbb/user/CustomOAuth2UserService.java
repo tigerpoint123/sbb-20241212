@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Map;
-
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -34,26 +33,29 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 카카오 사용자 정보 추출
         String id = attributes.get("id").toString();
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-        String email = "tigerrla@naver.com";
-//                kakaoAccount.get("email").toString();
+        String email = kakaoAccount.get("email").toString();
+        String nickname = ((Map<String, Object>) kakaoAccount.get("profile")).get("nickname").toString();
 
         // 사용자 저장 또는 업데이트
-        SiteUser user = saveOrUpdateUser(id, email);
+        SiteUser user = saveOrUpdateUser(id, email, nickname);
 
+        // OAuth2User 생성
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                 attributes,
-                userNameAttributeName
+                "id" // OAuth2User의 기본 키
         );
     }
 
-    private SiteUser saveOrUpdateUser(String id, String email) {
-        SiteUser user = userRepository.findByEmail(email)
+    private SiteUser saveOrUpdateUser(String kakaoId, String email, String nickname) {
+        SiteUser user = userRepository.findByKakaoId(kakaoId)
                 .orElse(SiteUser.builder()
-                        .kakaoId(id)
+                        .kakaoId(kakaoId)
                         .email(email)
-                        .role(Role.USER) // 사용자 기본 역할
+                        .nickname(nickname)
+                        .role(Role.USER)
                         .build());
+        user.setNickname(nickname); // 닉네임 업데이트
         return userRepository.save(user);
     }
 }

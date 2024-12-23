@@ -14,6 +14,9 @@ public class UserCreateForm {
     @NotEmpty(message = "사용자 ID는 필수입니다.")
     private String username;
 
+    @NotEmpty(message = "닉네임은 필수 항목입니다.")
+    private String nickname;
+
     @NotEmpty(message = "비밀번호는 필수항목입니다.")
     private String password1;
 

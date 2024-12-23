@@ -27,4 +27,6 @@ public class SiteUser {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private String nickname;
 }
