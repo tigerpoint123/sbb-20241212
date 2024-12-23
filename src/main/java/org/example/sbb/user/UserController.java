@@ -57,9 +57,7 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String login(Model model) {
-        String location = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=aa5aaf6346a4d796ac90b1a920a41168&redirect_uri=http://localhost:8080/question/list";
-        model.addAttribute("location", location);
+    public String login() {
         return "login_form";
     }
 

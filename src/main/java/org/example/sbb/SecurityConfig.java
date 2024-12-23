@@ -1,6 +1,7 @@
 package org.example.sbb;
 
 import lombok.RequiredArgsConstructor;
+import org.example.sbb.user.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +20,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableMethodSecurity(prePostEnabled = true) // @PreAuthorize 사용을 위해 필수
 @RequiredArgsConstructor
 public class SecurityConfig {
-
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,7 +38,12 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/"))
                 .logout((logout) -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
-                        .logoutSuccessUrl("/").invalidateHttpSession(true));
+                        .logoutSuccessUrl("/").invalidateHttpSession(true))
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .loginPage("/user/login")
+                        .defaultSuccessUrl("/")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)));
         return http.build();
     }
 
