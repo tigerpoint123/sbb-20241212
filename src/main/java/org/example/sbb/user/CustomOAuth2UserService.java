@@ -6,7 +6,6 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -34,28 +33,32 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String id = attributes.get("id").toString();
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         String email = kakaoAccount.get("email").toString();
-        String nickname = ((Map<String, Object>) kakaoAccount.get("profile")).get("nickname").toString();
+        String username = ((Map<String, Object>) kakaoAccount.get("profile")).get("nickname").toString();
 
         // 사용자 저장 또는 업데이트
-        SiteUser user = saveOrUpdateUser(id, email, nickname);
+        SiteUser user = saveOrUpdateUser(id, email, username);
 
-        // OAuth2User 생성
-        return new DefaultOAuth2User(
+        // CustomOAuth2User 반환
+        return new CustomOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                 attributes,
-                "id" // OAuth2User의 기본 키
+                userNameAttributeName, // OAuth2User의 기본 키
+                username,
+                email,
+                id
         );
     }
 
-    private SiteUser saveOrUpdateUser(String kakaoId, String email, String nickname) {
+    private SiteUser saveOrUpdateUser(String kakaoId, String email, String username) {
         SiteUser user = userRepository.findByKakaoId(kakaoId)
                 .orElse(SiteUser.builder()
                         .kakaoId(kakaoId)
                         .email(email)
-                        .nickname(nickname)
+                        .username(username)
                         .role(Role.USER)
                         .build());
-        user.setNickname(nickname); // 닉네임 업데이트
+        user.setNickname(username); // 닉네임 업데이트
+        user.setUsername(username);
         return userRepository.save(user);
     }
 }

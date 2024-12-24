@@ -26,24 +26,26 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
+                        .requestMatchers(new AntPathRequestMatcher("/**")).permitAll()) // 모든 요청 허용
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
+                        .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**"))) // H2 콘솔 예외
                 .headers(headers -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN
-                        )))
-                .formLogin((formLogin) -> formLogin
-                        .loginPage("/user/login")
-                        .defaultSuccessUrl("/"))
-                .logout((logout) -> logout
+                        ))) // iframe 허용
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/user/login") // 사용자 정의 로그인 페이지
+                        .defaultSuccessUrl("/")) // 로그인 성공 후 리다이렉트 URL
+                .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
-                        .logoutSuccessUrl("/").invalidateHttpSession(true))
+                        .logoutSuccessUrl("/") // 로그아웃 성공 후 리다이렉트 URL
+                        .invalidateHttpSession(true)) // 세션 무효화
                 .oauth2Login(oauth2Login -> oauth2Login
-                        .loginPage("/user/login")
-                        .defaultSuccessUrl("/")
+                        .loginPage("/user/login") // OAuth2 로그인 페이지
+                        .defaultSuccessUrl("/") // 로그인 성공 후 리다이렉트 URL
                         .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)));
+                                .userService(customOAuth2UserService))); // CustomOAuth2UserService 등록
+
         return http.build();
     }
 
@@ -56,5 +58,4 @@ public class SecurityConfig {
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
 }
