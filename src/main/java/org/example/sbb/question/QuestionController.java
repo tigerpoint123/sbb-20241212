@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,6 +30,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -113,7 +115,17 @@ public class QuestionController {
     public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal) {
         if (bindingResult.hasErrors()) return "question_form";
 
-        SiteUser siteUser = this.userService.getUser(principal.getName());
+        SiteUser siteUser;
+        if (principal instanceof OAuth2AuthenticationToken) {
+            // OAuth2 (카카오 로그인) 사용자의 경우
+            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
+            Map<String, Object> attributes = authToken.getPrincipal().getAttributes();
+            String kakaoId = attributes.get("id").toString();
+            siteUser = this.userService.getUserByKakaoId(kakaoId);
+        } else {
+            // 일반 로그인 사용자의 경우
+            siteUser = this.userService.getUser(principal.getName());
+        }
         Category category = categoryService.findCategory(Long.valueOf(questionForm.getCategory().getId()));
         questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser, category);
         return "redirect:/question/list";
