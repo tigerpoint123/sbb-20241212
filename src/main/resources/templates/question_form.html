@@ -2,9 +2,9 @@
 <div layout:fragment="content" class="container my-3">
     <form th:object="${questionForm}" method="post">
         <h5 class="my-3 border-bottom pb-2">
-            <div >
+            <div>
                 <select class="form-select" name="selectOption" id="selectOption" th:field="*{category}">
-                    <option value="">카테고리를선택해주세요</option> <!--선택안한 비어있는값-->
+                    <option value="">카테고리를 선택해주세요</option>
                     <option th:each="category : ${categories}"
                             th:value="${category.id}" th:text="${category.getCategoryName()}"></option>
                 </select>
@@ -18,10 +18,25 @@
         </div>
         <div class="mb-3">
             <label for="content" class="form-label">내용</label>
-            <textarea th:field="*{content}" id="content" class="form-control" rows="10"></textarea>
+            <!-- 텍스트 에디터가 동작할 textarea -->
+            <textarea th:field="*{content}" id="markdown-editor" class="form-control" rows="10"></textarea>
         </div>
         <input type="submit" value="저장하기" class="btn btn-primary my-2"/>
     </form>
 
+    <!-- SimpleMDE 초기화 -->
+    <script>
+        // 마크다운 에디터를 textarea에 연결
+        var simplemde = new SimpleMDE({
+            element: document.getElementById("markdown-editor"),
+            placeholder: "여기에 내용을 입력하세요...",
+            autosave: {
+                enabled: true,
+                uniqueId: "question_form",
+                delay: 1000, // 1초마다 자동 저장
+            },
+            spellChecker: false,
+        });
+    </script>
 </div>
 </html>
