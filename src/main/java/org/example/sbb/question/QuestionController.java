@@ -169,7 +169,19 @@ public class QuestionController {
     @GetMapping("/vote/{id}")
     public String vote(@PathVariable("id") Integer id, Principal principal) {
         Question question = this.questionService.getQuestion(id);
-        SiteUser siteUser = this.userService.getUser(principal.getName());
+
+        SiteUser siteUser;
+        if (principal instanceof OAuth2AuthenticationToken) {
+            // OAuth2 (카카오 로그인) 사용자의 경우
+            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
+            Map<String, Object> attributes = authToken.getPrincipal().getAttributes();
+            String kakaoId = attributes.get("id").toString();
+            siteUser = this.userService.getUserByKakaoId(kakaoId);
+        } else {
+            // 일반 로그인 사용자의 경우
+            siteUser = this.userService.getUser(principal.getName());
+        }
+
         this.questionService.vote(question, siteUser);
         return "redirect:/question/detail/" + id;
     }

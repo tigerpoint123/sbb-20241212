@@ -87,7 +87,17 @@ public class UserController {
     public String modifyPassword(Principal principal,
                                  @RequestParam(value = "currentPassword") String currentPassword,
                                  @RequestParam(value = "newPassword") String newPassword, Model model) {
-        SiteUser siteUser = this.userService.getUser(principal.getName());
+        SiteUser siteUser;
+        if (principal instanceof OAuth2AuthenticationToken) {
+            // OAuth2 (카카오 로그인) 사용자의 경우
+            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
+            Map<String, Object> attributes = authToken.getPrincipal().getAttributes();
+            String kakaoId = attributes.get("id").toString();
+            siteUser = this.userService.getUserByKakaoId(kakaoId);
+        } else {
+            // 일반 로그인 사용자의 경우
+            siteUser = this.userService.getUser(principal.getName());
+        }
 
         //비밀번호 검증
         if (!userService.checkPassword(siteUser.getPassword(), currentPassword)) {
@@ -103,7 +113,18 @@ public class UserController {
                              @RequestParam(value = "username") String username,
                              @RequestParam(value = "email") String email,
                              @RequestParam(value = "password") String password) {
-        SiteUser siteUser = this.userService.getUser(principal.getName());
+        SiteUser siteUser;
+        if (principal instanceof OAuth2AuthenticationToken) {
+            // OAuth2 (카카오 로그인) 사용자의 경우
+            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
+            Map<String, Object> attributes = authToken.getPrincipal().getAttributes();
+            String kakaoId = attributes.get("id").toString();
+            siteUser = this.userService.getUserByKakaoId(kakaoId);
+        } else {
+            // 일반 로그인 사용자의 경우
+            siteUser = this.userService.getUser(principal.getName());
+        }
+
         userService.modifyInfo(siteUser, username, email, password);
 
         return "redirect:/";
@@ -112,7 +133,6 @@ public class UserController {
     @GetMapping("/myInfo")
     public String myInfo(Model model, Principal principal) {
         SiteUser siteUser;
-
         if (principal instanceof OAuth2AuthenticationToken) {
             // OAuth2 (카카오 로그인) 사용자의 경우
             OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
