@@ -51,7 +51,6 @@ public class CommentController {
     public String recent(Model model) {
         List<Comment> list = this.commentService.findAll();
         model.addAttribute("recentList", list);
-
         return "recent_comment";
     }
 
