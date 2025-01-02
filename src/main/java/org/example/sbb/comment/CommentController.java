@@ -43,7 +43,6 @@ public class CommentController {
         }
 
         Question question = this.questionService.getQuestion(id);
-
         Comment comment = this.commentService.createQ(siteUser, commentForm.getContent(), question);
         return "redirect:/question/detail/"+id;
     }
