@@ -56,9 +56,9 @@ public class AnswerService {
     }
 
     public List<Answer> findAll() {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("createDate"));
-        return this.answerRepository.findAll();
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
+        List<Answer> sorts = this.answerRepository.findAll(sort);
+        return sorts;
     }
 
     public Page<Answer> findAnswerPaging(int id, int page, Pageable pageable, String sort) {
