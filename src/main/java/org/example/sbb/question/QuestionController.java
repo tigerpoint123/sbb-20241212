@@ -82,6 +82,7 @@ public class QuestionController {
         model.addAttribute("question", question);
         model.addAttribute("comments", comments);
         model.addAttribute("paging", answerPage);
+        model.addAttribute("sort", sort);
         return "question_detail";
     }
 

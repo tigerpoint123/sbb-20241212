@@ -65,11 +65,11 @@
         th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
     <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-            정렬 조건
+            <span th:text="${sort == 'createDate' ? '최신순' : '추천순'}">정렬 조건</span>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-            <li><a class="dropdown-item" th:href="@{|/question/detail/${question.id}?sort=createDate|}">최신순</a></li>
-            <li><a class="dropdown-item" th:href="@{|/question/detail/${question.id}?sort=vote|}">추천순</a></li>
+            <li><a class="dropdown-item" th:classappend="${sort == 'createDate' ? 'active' : ''}" th:href="@{|/question/detail/${question.id}?sort=createDate|}">최신순</a></li>
+            <li><a class="dropdown-item" th:classappend="${sort == 'vote' ? 'active' : ''}" th:href="@{|/question/detail/${question.id}?sort=vote|}">추천순</a></li>
         </ul>
     </div>
     <!-- 답변 반복 시작 -->
