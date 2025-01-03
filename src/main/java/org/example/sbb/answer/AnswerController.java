@@ -2,13 +2,12 @@ package org.example.sbb.answer;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.sbb.CommonUtil;
 import org.example.sbb.question.Question;
 import org.example.sbb.question.QuestionService;
 import org.example.sbb.user.SiteUser;
-import org.example.sbb.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,7 +19,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,23 +26,14 @@ import java.util.Map;
 public class AnswerController {
     private final QuestionService questionService;
     private final AnswerService answerService;
-    private final UserService userService;
+    private final CommonUtil commonUtil;
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{id}")
     public String createAnswer(Model model, @PathVariable("id") Integer id, @Valid AnswerForm answerForm, BindingResult bindingResult, Principal principal) {
         Question question = this.questionService.getQuestion(id);
-        SiteUser siteUser;
-        if (principal instanceof OAuth2AuthenticationToken) {
-            // OAuth2 (카카오 로그인) 사용자의 경우
-            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
-            Map<String, Object> attributes = authToken.getPrincipal().getAttributes();
-            String kakaoId = attributes.get("id").toString();
-            siteUser = this.userService.getUserByKakaoId(kakaoId);
-        } else {
-            // 일반 로그인 사용자의 경우
-            siteUser = this.userService.getUser(principal.getName());
-        }
+
+        SiteUser siteUser = commonUtil.isKakaoUser(principal);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("question", question);
@@ -92,17 +81,7 @@ public class AnswerController {
     public String answerVote(@PathVariable("id") Integer id, Principal principal) {
         Answer answer = answerService.getAnswer(id);
 
-        SiteUser siteUser;
-        if (principal instanceof OAuth2AuthenticationToken) {
-            // OAuth2 (카카오 로그인) 사용자의 경우
-            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
-            Map<String, Object> attributes = authToken.getPrincipal().getAttributes();
-            String kakaoId = attributes.get("id").toString();
-            siteUser = this.userService.getUserByKakaoId(kakaoId);
-        } else {
-            // 일반 로그인 사용자의 경우
-            siteUser = this.userService.getUser(principal.getName());
-        }
+        SiteUser siteUser = commonUtil.isKakaoUser(principal);
 
         this.answerService.vote(answer, siteUser);
         return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());

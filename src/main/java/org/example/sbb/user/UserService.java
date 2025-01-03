@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.Optional;
 
 @Service
@@ -18,6 +19,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private JavaMailSender mailSender;
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     public SiteUser create(String username, String email, String password, String nickname) {
         SiteUser siteUser = new SiteUser();
@@ -42,15 +45,22 @@ public class UserService {
     }
 
     public String sendTempPasswordEmail(String email) {
+        StringBuilder password = new StringBuilder(10);
         if (userRepository.findByEmail(email).isPresent()) {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom("tigerrla24@gmail.com");
             message.setTo(email);
             message.setSubject("임시 비밀번호");
-            message.setText("123456");
+
+            // 비밀번호 생성 로직 (10글자)
+            for (int i = 0; i < 10; i++) {
+                int index = RANDOM.nextInt(CHARACTERS.length());
+                password.append(CHARACTERS.charAt(index));
+            }
+            message.setText(password.toString());
             mailSender.send(message);
         }
-        return "123456";
+        return password.toString();
     }
 
     public void modifyPassword(SiteUser siteUser, String username, String email, String password) {

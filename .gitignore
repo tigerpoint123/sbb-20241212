@@ -38,4 +38,5 @@ out/
 
 db_dev.mv.db
 db_dev.trace.db
-application.properties
+.application.properties
+.application.yml

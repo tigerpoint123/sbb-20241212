@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.sbb.CommonUtil;
 import org.example.sbb.answer.Answer;
 import org.example.sbb.answer.AnswerForm;
 import org.example.sbb.answer.AnswerService;
@@ -16,12 +17,10 @@ import org.example.sbb.comment.Comment;
 import org.example.sbb.comment.CommentForm;
 import org.example.sbb.comment.CommentService;
 import org.example.sbb.user.SiteUser;
-import org.example.sbb.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,17 +29,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/question")
 public class QuestionController {
     private final QuestionService questionService;
-    private final UserService userService;
     private final CommentService commentService;
     private final AnswerService answerService;
     private final CategoryService categoryService;
+    private final CommonUtil commonUtil;
 
     @GetMapping("/list")
     public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
@@ -115,17 +113,8 @@ public class QuestionController {
     public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal) {
         if (bindingResult.hasErrors()) return "question_form";
 
-        SiteUser siteUser;
-        if (principal instanceof OAuth2AuthenticationToken) {
-            // OAuth2 (카카오 로그인) 사용자의 경우
-            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
-            Map<String, Object> attributes = authToken.getPrincipal().getAttributes();
-            String kakaoId = attributes.get("id").toString();
-            siteUser = this.userService.getUserByKakaoId(kakaoId);
-        } else {
-            // 일반 로그인 사용자의 경우
-            siteUser = this.userService.getUser(principal.getName());
-        }
+        SiteUser siteUser = commonUtil.isKakaoUser(principal);
+
         Category category = categoryService.findCategory(Long.valueOf(questionForm.getCategory().getId()));
         questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser, category);
         return "redirect:/question/list";
@@ -170,17 +159,7 @@ public class QuestionController {
     public String vote(@PathVariable("id") Integer id, Principal principal) {
         Question question = this.questionService.getQuestion(id);
 
-        SiteUser siteUser;
-        if (principal instanceof OAuth2AuthenticationToken) {
-            // OAuth2 (카카오 로그인) 사용자의 경우
-            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
-            Map<String, Object> attributes = authToken.getPrincipal().getAttributes();
-            String kakaoId = attributes.get("id").toString();
-            siteUser = this.userService.getUserByKakaoId(kakaoId);
-        } else {
-            // 일반 로그인 사용자의 경우
-            siteUser = this.userService.getUser(principal.getName());
-        }
+        SiteUser siteUser = commonUtil.isKakaoUser(principal);
 
         this.questionService.vote(question, siteUser);
         return "redirect:/question/detail/" + id;
