@@ -50,22 +50,9 @@ public class QuestionController {
         return "question_list";
     }
 
-    @GetMapping(value = "/detail/{id}/{sort}")
-    public String detail(Model model, @PathVariable(value = "id") Integer id, @RequestParam(value = "page", defaultValue = "0") int page,
-                         AnswerForm answerForm, CommentForm commentForm, Pageable pageable,
-                         @PathVariable(value = "sort") String sort) {
-        Question question = this.questionService.getQuestion(id);
-        List<Comment> comments = commentService.findCommentsById(id);
-        Page<Answer> answerPage = this.answerService.findAnswerPaging(id, page, pageable, sort);
-
-        model.addAttribute("question", question);
-        model.addAttribute("comments", comments);
-        model.addAttribute("paging", answerPage);
-        return "question_detail";
-    }
-
     @GetMapping(value = "/detail/{id}")
     public String detail(Model model, @PathVariable(value = "id") Integer id, @RequestParam(value = "page", defaultValue = "0") int page,
+                         @RequestParam(value = "sort", defaultValue = "createDate") String sort,
                          AnswerForm answerForm, CommentForm commentForm, Pageable pageable, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Question question = this.questionService.getQuestion(id);
 
@@ -89,8 +76,7 @@ public class QuestionController {
         }
         // 쿠키 코드 끝
 
-        List<Comment> comments = commentService.findCommentsById(id);
-        String sort = "createDate";
+        List<Comment> comments = commentService.findCommentsByQuestionId(id);
         Page<Answer> answerPage = this.answerService.findAnswerPaging(id, page, pageable, sort);
 
         model.addAttribute("question", question);

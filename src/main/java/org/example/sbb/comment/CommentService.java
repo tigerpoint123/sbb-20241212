@@ -39,7 +39,7 @@ public class CommentService {
         return comment;
     }
 
-    public List<Comment> findCommentsById(Integer id) {
+    public List<Comment> findCommentsByQuestionId(Integer id) {
         return this.commentRepository.findAllByQuestionId(id);
     }
 

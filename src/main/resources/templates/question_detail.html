@@ -68,8 +68,8 @@
             정렬 조건
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-            <li><a class="dropdown-item" th:href="@{|/question/detail/${question.id}/createDate|}">최신순</a></li>
-            <li><a class="dropdown-item" th:href="@{|/question/detail/${question.id}/vote|}">추천순</a></li>
+            <li><a class="dropdown-item" th:href="@{|/question/detail/${question.id}?sort=createDate|}">최신순</a></li>
+            <li><a class="dropdown-item" th:href="@{|/question/detail/${question.id}?sort=vote|}">추천순</a></li>
         </ul>
     </div>
     <!-- 답변 반복 시작 -->
@@ -160,14 +160,12 @@
             if (confirm("정말로 추천하시겠습니까?")) {
                 location.href = this.dataset.uri;
             }
-            ;
         });
     });
 
     const showInputBtn = document.getElementById('showInput');
     const showCommentBtnOnAnswer = document.querySelectorAll('.showCommentBtnOnAnswer');
     const questionCommentForm = document.getElementById('commentFormQuestion');
-    // const answerCommentForm = document.querySelectorAll('.commentFormAnswer');
     const comments = document.getElementById('comments');
 
     showInputBtn.addEventListener('click', () => {
