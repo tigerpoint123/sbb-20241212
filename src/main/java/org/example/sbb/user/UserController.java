@@ -111,7 +111,6 @@ public class UserController {
     @GetMapping("/myInfo")
     public String myInfo(Model model, Principal principal) {
         SiteUser siteUser = commonUtil.isKakaoUser(principal);
-
         if (siteUser == null)
             throw new RuntimeException("사용자 정보를 찾을 수 없습니다.");
 
